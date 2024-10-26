@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rule Engine Dashboard</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f5f6fa;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --text-color: #2c3e50;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, var(--primary-color), #7474BF);
+            color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e1e1e1;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #357abd;
+        }
+
+        .response {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            background-color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        .success {
+            color: var(--success-color);
+        }
+
+        .error {
+            color: var(--error-color);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Rule Engine Dashboard</h1>
+            <p>Create, evaluate, and manage your business rules</p>
+        </div>
+
+        <div class="card-grid">
+            <div class="card">
+                <h2>Add Rule</h2>
+                <div class="input-group">
+                    <input type="text" id="rule-input" placeholder="Enter rule (e.g., age > 18 AND income > 50000)">
+                </div>
+                <button onclick="addRule()">Add Rule</button>
+                <div id="add-rule-response" class="response"></div>
+            </div>
+
+            <div class="card">
+                <h2>Evaluate Rule</h2>
+                <div class="input-group">
+                    <input type="text" id="rule-id-input" placeholder="Enter Rule ID">
+                </div>
+                <div class="input-group">
+                    <input type="text" id="data-input" placeholder='Enter data (e.g., {"age": 25, "income": 60000})'>
+                </div>
+                <button onclick="evaluateRule()">Evaluate Rule</button>
+                <div id="evaluate-rule-response" class="response"></div>
+            </div>
+
+            <div class="card">
+                <h2>Delete Rule</h2>
+                <div class="input-group">
+                    <input type="text" id="delete-rule-id" placeholder="Enter Rule ID">
+                </div>
+                <button onclick="deleteRule()">Delete Rule</button>
+                <div id="delete-rule-response" class="response"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Your existing JavaScript functions here
+        function addRule() {
+            const rule = document.getElementById("rule-input").value;
+            if (rule) {
+                fetch('/rules', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ rule: rule })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const responseEl = document.getElementById("add-rule-response");
+                    responseEl.innerText = data.message || data.error;
+                    responseEl.className = data.message ? 'response success' : 'response error';
+                })
+                .catch(error => {
+                    const responseEl = document.getElementById("add-rule-response");
+                    responseEl.innerText = 'Error: ' + error;
+                    responseEl.className = 'response error';
+                });
+            }
+        }
+
+        function evaluateRule() {
+            const ruleId = document.getElementById("rule-id-input").value;
+            const dataInput = document.getElementById("data-input").value;
+
+            let data;
+            try {
+                data = JSON.parse(dataInput);
+            } catch (e) {
+                const responseEl = document.getElementById("evaluate-rule-response");
+                responseEl.innerText = "Invalid JSON input.";
+                responseEl.className = 'response error';
+                return;
+            }
+
+            if (ruleId && data) {
+                fetch('/evaluate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        rule_id: ruleId,
+                        data: data
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const responseEl = document.getElementById("evaluate-rule-response");
+                    responseEl.innerText = `Result: ${data.result}`;
+                    responseEl.className = 'response success';
+                })
+                .catch(error => {
+                    const responseEl = document.getElementById("evaluate-rule-response");
+                    responseEl.innerText = 'Error: ' + error;
+                    responseEl.className = 'response error';
+                });
+            }
+        }
+
+        function deleteRule() {
+            const ruleId = document.getElementById("delete-rule-id").value;
+
+            fetch(`/rules/${ruleId}`, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => {
+                const responseEl = document.getElementById("delete-rule-response");
+                responseEl.innerText = data.message || data.error;
+                responseEl.className = data.message ? 'response success' : 'response error';
+            })
+            .catch(error => {
+                const responseEl = document.getElementById("delete-rule-response");
+                responseEl.innerText = 'Error: ' + error;
+                responseEl.className = 'response error';
+            });
+        }
+    </script>
+</body>
+</html>

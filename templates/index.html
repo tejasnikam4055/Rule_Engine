@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <title>Rule Engine</title>
+</head>
+<body>
+    <h2>Add Rule</h2>
+    <input type="text" id="rule-input" placeholder="Enter Rule String"><br><br>
+    <button onclick="addRule()">Add Rule</button>
+    <p id="add-rule-response"></p>
+
+    <h2>Evaluate Rule</h2>
+    <input type="text" id="rule-id-input" placeholder="Enter Rule ID"><br><br>
+    <input type="text" id="data-input" placeholder="Enter Data as JSON"><br><br>
+    <button onclick="evaluateRule()">Evaluate Rule</button>
+    <p id="evaluate-rule-response"></p>
+
+    <h2>Delete Rule</h2>
+    <input type="text" id="delete-rule-id" placeholder="Enter Rule ID"><br><br>
+    <button onclick="deleteRule()">Delete Rule</button>
+    <p id="delete-rule-response"></p>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

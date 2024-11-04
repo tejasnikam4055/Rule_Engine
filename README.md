@@ -196,17 +196,3 @@ For deployment, consider using services like Heroku, AWS, or DigitalOcean. Ensur
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Acknowledgments
-
-- **Flask framework**: For building the web application.
-- **MySQL Connector/Python**: For database interaction.
-- **Modern UI design principles**: For crafting the user interface.
-- **Community contributions**: To all contributors who helped improve this project.
-
----
-
-### Additional Recommendations
-- Consider adding a **Screenshots** section to visually represent your application.
-- Provide a **Changelog** to document updates and changes over time.
-- If applicable, mention any specific **technologies** or **libraries** used in the project for additional clarity.
-
